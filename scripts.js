@@ -1,14 +1,17 @@
 ﻿const Modal = {
-    open(){
+    open(cSelector){
         document
-            .querySelector('.modal-overlay')
+            .querySelector(cSelector)
             .classList.add('active')
     },
-    close(){
+    close(cSelector){
         document
-            .querySelector('.modal-overlay')
+            .querySelector(cSelector)
             .classList.remove('active')
     }
+}
+const exChange = {
+
 }
 const Storage = {
     get(){
@@ -70,6 +73,14 @@ const Utils = {
     formatDate(date){
         const splitedDate = date.split("-")
         return `${splitedDate[2]}/${splitedDate[1]}/${splitedDate[0]}`
+    },
+    getCotacao(moeda){
+        if( moeda == '1')
+            return 5.43
+        else if(moeda == '2') 
+        return 6.49 
+        else
+        return 1
     }
 }
 
@@ -77,12 +88,13 @@ const Form = {
     description: document.querySelector('input#description'),
     amount: document.querySelector('input#amount'),
     date: document.querySelector('input#date'),
-
+    select: document.querySelector('select#selectMoney'),
     getValues(){
         return {
             description: Form.description.value,
             amount:Form.amount.value,
             date:Form.date.value,
+            select:Form.select.value
         }
     },
     validadeFields() {
@@ -92,20 +104,41 @@ const Form = {
         }  
     },
     formatValues(){
-        let {description,amount,date} = Form.getValues() 
+        let {description,amount,date,select} = Form.getValues() 
         amount = Utils.formatAmount(amount)
         date   = Utils.formatDate(date)
 
         return {
             description,
             amount,
-            date
+            date,
+            select
         }
     },
     clearFields(){
         Form.description.value = ""
         Form.amount.value = ""
         Form.date.value = ""
+    },
+    AjustaMoeda(cotacao,selected){
+        Transaction.all.forEach((transaction)=>{
+            if (selected == '0' && transaction.select != '0')
+                {
+                    transaction.amount = transaction.amount / Utils.getCotacao(transaction.select)
+                    transaction.select = selected 
+                }
+                else if (selected != '0' && transaction.select != selected )  
+                {  
+                    transaction.amount = transaction.amount / Utils.getCotacao(transaction.select)
+                    transaction.amount *= cotacao 
+                    transaction.select = selected
+                }
+                else
+                {
+                    transaction.amount = transaction.amount / Utils.getCotacao(transaction.select)
+                    transaction.select = selected 
+                }
+            })
     },
     submit(event){
        event.preventDefault()
@@ -114,20 +147,31 @@ const Form = {
         const transaction = Form.formatValues()
         Transaction.add(transaction)
         Form.clearFields()
-        Modal.close()
-        console.log(transaction)
+        Modal.close('.modal-overlay')
        } catch (error) {
          alert(error.message)  
        }
       
+    },
+    exChange(event){
+        event.preventDefault()
+        try {
+        
+         let {select} = Form.getValues() 
+         cotacao =  Utils.getCotacao(select)
+         Form.AjustaMoeda(cotacao,select)
+         Form.clearFields()
+         App.reload()
+         Modal.close('.modal-money')
+        } catch (error) {
+          alert(error.message)  
+        }
     }
 }
 
 const DOM = {
     transactionsContainer: document.querySelector('#data-table tbody'),
     addTransaction(trasaction,index){
-        console.log(trasaction)
-        console.log(index)
         const tr = document.createElement('tr')
         tr.innerHTML = DOM.innerHTMLTransaction(trasaction,index)
         tr.dataset.index = index

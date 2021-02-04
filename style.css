@@ -227,6 +227,27 @@ td.expense{
 
     z-index: 999;
 }
+.modal-money.active {
+    opacity: 1;
+    visibility:visible; 
+}
+.modal-money{
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    
+    position: fixed;
+    top: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+    visibility: hidden;
+
+    z-index: 999;
+}
 
 .modal{
     background: #f0f2f5;
@@ -246,12 +267,29 @@ td.expense{
     margin-top: 0;
 }
 
+#selectMoney{-webkit-appearance: none;
+                   -moz-appearance: none; 
+                   appearance: none; 
+                   background: url(http://www.webcis.com.br/images/imagens-noticias/select/ico-seta-appearance.gif) no-repeat #eeeeee;
+                   background-position: 218px center;
+                   width: 250px;
+                   height:30px; 
+                   border:1px solid #ddd;}
+
 input{
     border: none;
     border-radius: 0.2rem;
     padding: 0.8rem;
     width: 100%;
 }
+
+select {
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+}
+
+
 
 .input-group{
     margin-top:0.8rem;
